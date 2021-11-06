@@ -617,8 +617,8 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			return;
 				//Disable spamming protection for special command
 		bool is_command=!strcmp(pMsg->m_pMessage, ".info") || !strcmp(pMsg->m_pMessage, "/stats") || !strcmp(pMsg->m_pMessage, "/lvl") ||
-			!strncmp(pMsg->m_pMessage,"/race",5) || !strcmp(pMsg->m_pMessage, "/ability") || !strcmp(pMsg->m_pMessage, "/otherlvl") ||
-			!strcmp(pMsg->m_pMessage, "/help");
+			!strncmp(pMsg->m_pMessage,"/c",5) || !strcmp(pMsg->m_pMessage, "/skill") || !strcmp(pMsg->m_pMessage, "/otherlvl") ||
+			!strcmp(pMsg->m_pMessage, "/bz");
 		if(g_Config.m_SvSpamprotection && pPlayer->m_LastChat && pPlayer->m_LastChat+Server()->TickSpeed() > Server()->Tick() && (m_pController->IsRpg() && !is_command || !m_pController->IsRpg()))
 		{
 			pPlayer->m_LastChat = Server()->Tick();
@@ -630,7 +630,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			if(!strcmp(pMsg->m_pMessage, ".info"))
 			{
 				char buf[128];
-				str_format(buf, sizeof(buf), "War3 mod %s contact Rajh. (C)Rajh(%s)",WAR3_VERSION,Server()->ClientName(ClientID));
+				str_format(buf, sizeof(buf), "魔兽争霸3 %s by Rajh. (C)Rajh(%s)",WAR3_VERSION,Server()->ClientName(ClientID));
 				SendChat(-1,CHAT_ALL,buf);
 				pPlayer->m_LastChat = Server()->Tick();
 			}
@@ -643,7 +643,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				}
 				else
 				{
-					str_format(buf, sizeof(buf), "Please choose a race\n say \"/race name\"");
+					str_format(buf, sizeof(buf), "请选择一个职业\n 输入 \"/c 角色ID\"");
 					SendBroadcast(buf, ClientID);
 				}
 			}
@@ -669,12 +669,12 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 					SendBroadcast(buf, ClientID);
 				}
 			}
-			else if(!strncmp(pMsg->m_pMessage,"/race",5) && p->GetTeam() != -1)
+			else if(!strncmp(pMsg->m_pMessage,"/c",5) && p->GetTeam() != -1)
 			{
-				if(!strcmp(pMsg->m_pMessage, "/race orc"))
+				if(!strcmp(pMsg->m_pMessage, "/c sr"))
 				{
 					char buf[128];
-					str_format(buf, sizeof(buf), "Orc chosen");
+					str_format(buf, sizeof(buf), "选择兽人");
 					SendBroadcast(buf, ClientID);
 					p->InitRpg();
 					p->m_RaceName=ORC;
@@ -684,10 +684,10 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 						p->m_Score++;
 					}
 				}
-				else if(!strcmp(pMsg->m_pMessage, "/race elf"))
+				else if(!strcmp(pMsg->m_pMessage, "/c jl"))
 				{
 					char buf[128];
-					str_format(buf, sizeof(buf), "Elf chosen");
+					str_format(buf, sizeof(buf), "选择精灵");
 					SendBroadcast(buf, ClientID);
 					p->InitRpg();
 					p->m_RaceName=ELF;
@@ -697,10 +697,10 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 						p->m_Score++;
 					}
 				}
-				else if(!strcmp(pMsg->m_pMessage, "/race undead"))
+				else if(!strcmp(pMsg->m_pMessage, "/c bsz"))
 				{
 					char buf[128];
-					str_format(buf, sizeof(buf), "Undead chosen");
+					str_format(buf, sizeof(buf), "选择不死者");
 					SendBroadcast(buf, ClientID);
 					p->InitRpg();
 					p->m_RaceName=UNDEAD;
@@ -710,10 +710,10 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 						p->m_Score++;
 					}
 				}
-				else if(!strcmp(pMsg->m_pMessage, "/race human"))
+				else if(!strcmp(pMsg->m_pMessage, "/c rl"))
 				{
 					char buf[128];
-					str_format(buf, sizeof(buf), "Human chosen");
+					str_format(buf, sizeof(buf), "选择人类");
 					SendBroadcast(buf, ClientID);
 					p->InitRpg();
 					p->m_RaceName=HUMAN;
@@ -723,7 +723,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 						p->m_Score++;
 					}
 				}
-				else if(!strcmp(pMsg->m_pMessage, "/race tauren"))
+				else if(!strcmp(pMsg->m_pMessage, "/c ntr"))
 				{
 					int count_tauren=0;
 					int i;
@@ -735,7 +735,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 					if(count_tauren  < g_Config.m_SvMaxTauren)
 					{
 						char buf[128];
-						str_format(buf, sizeof(buf), "Tauren chosen");
+						str_format(buf, sizeof(buf), "选择牛头人");
 						SendBroadcast(buf, ClientID);
 						p->InitRpg();
 						p->m_RaceName=TAUREN;
@@ -748,14 +748,14 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 					else
 					{
 						char buf[128];
-						str_format(buf, sizeof(buf), "Too much tauren in your team");
+						str_format(buf, sizeof(buf), "你的队伍里有太多纯爱战士了！");
 						SendBroadcast(buf, ClientID);
 					}
 				}
 				else
 				{
 					char buf[128];
-					str_format(buf, sizeof(buf), "Wrong race : orc/human/elf/undead/tauren");
+					str_format(buf, sizeof(buf), "错误的角色ID : sr/rl/jl/bsz/ntr");
 					SendBroadcast(buf, ClientID);
 				}
 				p->m_Check=true;
@@ -767,7 +767,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 					p->m_Leveled--;
 				else
 				{
-					str_format(buf, sizeof(buf), "Wrong number");
+					str_format(buf, sizeof(buf), "错误的数字");
 					SendBroadcast(buf, ClientID);
 				}
 			}
@@ -778,7 +778,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 					p->m_Leveled--;
 				else
 				{
-					str_format(buf, sizeof(buf), "Wrong number");
+					str_format(buf, sizeof(buf), "错误的数字");
 					SendBroadcast(buf, ClientID);
 				}
 			}
@@ -789,33 +789,33 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 					p->m_Leveled--;
 				else
 				{
-					str_format(buf, sizeof(buf), "Wrong number");
+					str_format(buf, sizeof(buf), "错误的数字");
 					SendBroadcast(buf, ClientID);
 				}
 					
 			}
-			else if(!strcmp(pMsg->m_pMessage, "/ability"))
+			else if(!strcmp(pMsg->m_pMessage, "/skill"))
 			{
 				int res=p->UseSpecial();
 				char buf[128];
 				if(res==-1)
 				{
-					str_format(buf, sizeof(buf), "You don't have a special ability yet");
+					str_format(buf, sizeof(buf), "你暂时还没有特殊技能");
 					SendBroadcast(buf, ClientID);
 				}
 				else if(res==-2)
 				{
-					str_format(buf, sizeof(buf), "You are dead!");
+					str_format(buf, sizeof(buf), "你死了!");
 					SendBroadcast(buf, ClientID);
 				}
 				else if(res == -3)
 				{
-					str_format(buf, sizeof(buf), "Error ?");
+					str_format(buf, sizeof(buf), "你他妈故意找茬是吧 ?");
 					SendBroadcast(buf, ClientID);
 				}
 				else if(res == -4)
 				{
-					str_format(buf, sizeof(buf), "Can't teleport");
+					str_format(buf, sizeof(buf), "无法传送");
 					SendBroadcast(buf, ClientID);
 				}
 			}
@@ -824,7 +824,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				if(!p->PrintOtherLvl())
 				{
 					char buf[128];
-					str_format(buf, sizeof(buf), "error");
+					str_format(buf, sizeof(buf), "你他妈故意找茬是吧 ?");
 					SendBroadcast(buf, ClientID);
 				}
 			}
