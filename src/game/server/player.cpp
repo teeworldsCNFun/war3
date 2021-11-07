@@ -103,7 +103,7 @@ void CPlayer::Tick()
 	if(m_RaceName==VIDE && Server()->Tick()%(Server()->TickSpeed()*2)==0 && m_Team != -1)
 	{
 		char buf[128];
-		str_format(buf, sizeof(buf), "Choose a race say \"/race undead/orc/human/elf/tauren\"");
+		str_format(buf, sizeof(buf), "输入 \"/race undead/orc/human/elf/tauren\" 以选择种族");
 		GameServer()->SendBroadcast(buf, m_ClientID);
 	}
 
@@ -212,9 +212,9 @@ void CPlayer::OnDisconnect(const char *pReason)
 	{
 		char aBuf[512];
 		if(pReason && *pReason)
-			str_format(aBuf, sizeof(aBuf),  "'%s' has left the game (%s)", Server()->ClientName(m_ClientID), pReason);
+			str_format(aBuf, sizeof(aBuf),  "'%s' 离开了游戏 (%s)", Server()->ClientName(m_ClientID), pReason);
 		else
-			str_format(aBuf, sizeof(aBuf),  "'%s' has left the game", Server()->ClientName(m_ClientID));
+			str_format(aBuf, sizeof(aBuf),  "'%s' 离开了游戏", Server()->ClientName(m_ClientID));
 		GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 
 		str_format(aBuf, sizeof(aBuf), "leave player='%d:%s'", m_ClientID, Server()->ClientName(m_ClientID));
